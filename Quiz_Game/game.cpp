@@ -8,9 +8,19 @@
 class game
 {
     unordered_map<question*,char> UserAns;
+    vector<int> MarkForReview;
+    map<int,char> Solved;
+    
+    game(){
+        for(int i = 0; i<15; i++){
+            Solved[i+1] = ' ';
+        }
+    }
+
 public:
     questionBank ques;
     question *quesNode = NULL;
+    unordered_map<int,question *> questionNumMapping;
     text instr;
 
     void print(question *q)
@@ -22,14 +32,14 @@ public:
         cout << q->optD << endl;
     }
 
-    void gameplay()
+    void startGame()
     {
         ques.createQues();
+        questionNumMapping = ques.mp;
         question *ptr = ques.getHead();
         quesNode = ptr;
         system("clear");       
-        print(ptr->next); 
-
+        print(quesNode); 
         ansSelection();
     }
 
@@ -76,26 +86,45 @@ public:
             else{
                 UserAns[quesNode] = choice;
                 cout << endl;
-                instr.questionTraversalInstructions();
-                char mode = '\0';
-                cout << "Select a mode to move to different Question: ";
-                cin >> mode ;
-                quesTraversal(quesNode,mode);
             }
         }
+
+        instr.questionTraversalInstructions();
+        char mode = '\0';
+        cout << "Select a mode to move to different Question: ";
+        cin >> mode ;
+        quesTraversal(quesNode,mode);
+        system("clear");
+        print(quesNode);
+        ansSelection();
+    }
+
+
+    int questionNumValidity(){
+        int num = 0;
+        while(1){
+            cout << "\nEnter the Question Number to want to go: ";
+            cin>> num;
+            if(num>0 && num<=15) break;
+            else cout << "Enter the valid question number from 1-15!!" << endl; 
+        }
+        return num;
     }
 
     void quesTraversal(question *&head,char mode){
         switch(mode){
-            case '1': head = head->next;
-            case '2': head = head->prev;
+            case '1': 
+                head = head->next;
+                break;
+            case '2':
+                head = head->prev;
+                break;
             case '3': 
-                cout << "Enter the Question Number to want to go: ";
-                int quesNo;
-                cin >> quesNo;
+                int quesNo = questionNumValidity();
                 questionBank ques;
-                question *ptr = ques.mp[quesNo];
+                question *ptr = questionNumMapping[quesNo];
 
+                cout << ptr << endl;
                 while(head!=ptr){
                     head = head->next;
                 }
@@ -106,6 +135,6 @@ public:
 int main()
 {
     game g;
-    g.gameplay();
+    g.startGame();
     return 0;
 }

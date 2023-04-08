@@ -13,13 +13,6 @@ class question{
     question *prev;
     unordered_map<question*,string> answer;
 
-    vector<int> MarkForReview;
-    vector<int> Solved;
-    vector<int> Unsolved;
-
-    unordered_map<int,bool> visited;    
-
-
     question(string ques,string a,string b,string c,string d){
         this->ques = ques;
         optA = a;
@@ -55,7 +48,6 @@ class questionBank{
     public:
     question *head = NULL;   
     question *tail = NULL;
-
     unordered_map<int,question*> mp;
 
     void createQues(){
@@ -67,10 +59,10 @@ class questionBank{
                 getline(in,questionDetails[j]);
             }
 
-            mp[i+1] = tail;
-
             if(head == NULL) insertAtFirst(questionDetails,head,tail);
             else insertAtTail(questionDetails,head,tail);
+            mp[i+1] = tail;
+            cout << mp[i+1]<< endl;
         }
         in.close();
     }
