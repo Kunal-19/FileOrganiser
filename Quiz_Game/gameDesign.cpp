@@ -1,45 +1,36 @@
 #include<iostream>
-#include<unordered_map>
 #include<stdlib.h>
 #include<string.h>
 #include"text.cpp"
 #include"ques.cpp"
+#include"score.cpp"
+using namespace std;
+
 
 class game
 {
-    unordered_map<question*,char> UserAns;
-    vector<int> MarkForReview;
-    map<int,char> Solved;
-    
-    game(){
-        for(int i = 0; i<15; i++){
-            Solved[i+1] = ' ';
-        }
-    }
-
 public:
+    vector<char> UserAns;
     questionBank ques;
-    question *quesNode = NULL;
-    unordered_map<int,question *> questionNumMapping;
+    bool trigger;
+    vector<vector<string> > questions;
     text instr;
+    int quesNum;
 
-    void print(question *q)
+    void print(vector<vector<string> > &questions, int quesNum)
     {
-        cout << q->ques << endl;
-        cout << q->optA << endl;
-        cout << q->optB << endl;
-        cout << q->optC << endl;
-        cout << q->optD << endl;
+        for(int i=0; i<5; i++) cout << questions[quesNum-1][i]<< endl;
     }
 
     void startGame()
     {
+        trigger = true;               // For breaking the loop in submission(N) and question selection
         ques.createQues();
-        questionNumMapping = ques.mp;
-        question *ptr = ques.getHead();
-        quesNode = ptr;
-        system("clear");       
-        print(quesNode); 
+        questions = ques.question;
+        system("clear");     
+        for(int i=0; i<15; i++) UserAns.push_back(' ');
+        this->quesNum = 1;  
+        print(questions,quesNum); 
         ansSelection();
     }
 
@@ -54,6 +45,8 @@ public:
             else
                 cout << "Please Read the Instruction properly.. Please select a valid option(1/2): ";
         }
+        if(choice == 1 && quesNum==15) trigger = true;
+        else if(choice == 2 && quesNum == 15) trigger = false;
         return choice;
     }
 
@@ -84,18 +77,20 @@ public:
             char choice = makingOptChoice();
             if(choice == '#') ansSelection();
             else{
-                UserAns[quesNode] = choice;
+                UserAns[quesNum-1] = choice;
+                trigger = true;
                 cout << endl;
             }
         }
 
+        if(trigger) submit(quesNum);
         instr.questionTraversalInstructions();
         char mode = '\0';
         cout << "Select a mode to move to different Question: ";
         cin >> mode ;
-        quesTraversal(quesNode,mode);
+        quesTraversal(quesNum,mode);
         system("clear");
-        print(quesNode);
+        print(questions,quesNum);
         ansSelection();
     }
 
@@ -111,23 +106,43 @@ public:
         return num;
     }
 
-    void quesTraversal(question *&head,char mode){
+
+    void quesTraversal(int &quesNum,char mode){
         switch(mode){
             case '1': 
-                head = head->next;
+                quesNum++;
+                if(quesNum == 16) quesNum = 1;
                 break;
             case '2':
-                head = head->prev;
+                quesNum--;
+                if(quesNum == 0) quesNum = 15;
                 break;
             case '3': 
-                int quesNo = questionNumValidity();
-                questionBank ques;
-                question *ptr = questionNumMapping[quesNo];
+                int selectQuesNo = questionNumValidity();
+                quesNum = selectQuesNo;
+        }
+        if(quesNum == 15) trigger = true;
+        else trigger = false;
+    }
 
-                cout << ptr << endl;
-                while(head!=ptr){
-                    head = head->next;
-                }
+
+    void submit(int quesNum){
+        if(quesNum!=15) return ;
+        char choice = '\0';
+
+        while(1){
+            cout << "Do you want to submit your answers(Y/N): ";
+            cin >> choice;
+            choice = tolower(choice);
+
+            if(choice != 'y' && choice!='n') cout <<  "Please Choose a valid option.. Select 'Y' to submit answers else 'N'." << endl<< endl;
+            else if(choice == 'y'){
+                instr.command('n');
+            }
+            else{
+                trigger = false;
+                ansSelection();
+            } 
         }
     }
 };

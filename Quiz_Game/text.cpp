@@ -1,12 +1,13 @@
 #include<iostream>
 #include<stdlib.h>
 
+
 using namespace std;
 
 class text{
     public:
 
-    void rules(){        
+    void rules(){     
         instructions();
         makingInitailChoice();
         questionTraversalInstructions();        
@@ -67,6 +68,8 @@ class text{
             //Clearing the Screen
             system("clear");
 
+            cout << "YOUR SCORE: " << 0 << endl;
+
             //Moving the cursor to desired position
             printf("\033[%d;%dH", 4, 40);
             cout << "You successfully Exit the game!!!"<< endl;
@@ -77,6 +80,8 @@ class text{
 
             //Exiting the game..
             if(choice == 'n' || choice == 'N') exit(0);
+            // else 
         }
+        // else player.startGame();
     }
 };
