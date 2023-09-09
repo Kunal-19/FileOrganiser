@@ -12,7 +12,7 @@ function tree(dirPath,indent){
 
         if(isFile == false){
             tree(child_path,"-" + indent);
-        }else console.log(chalk.red(indent + "->" + children[i]));
+        }else console.log(chalk.yellowBright(indent + "->" + children[i]));
     }
 }
 
