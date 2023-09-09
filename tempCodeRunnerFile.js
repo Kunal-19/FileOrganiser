@@ -1,0 +1,1 @@
+node main.js organise "/Users/medo/Downloads"
